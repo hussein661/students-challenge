@@ -1,0 +1,51 @@
+import React, { Component } from "react";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import Admin from "./pages/admin";
+import Login from "./pages/login";
+import Navbar from "./components/navbar";
+import Home from "./pages/home";
+import Register from "./pages/register";
+
+const isLoggedIn = () => {
+  const token = localStorage.getItem("API_TOKEN");
+  if (token !== null && token.length > 10) {
+    return true;
+  }
+};
+
+const MyRoute = MyRouteProps => {
+  const Component = MyRouteProps.component;
+  const publicRoute = MyRouteProps.publicRoute ? true : false;
+  const params = MyRouteProps.computedMatch.params;
+  return (
+    <div>
+      <Navbar isLoggedIn={isLoggedIn} />
+      {isLoggedIn() || publicRoute ? (
+        <Route
+          render={originalRouteProps => (
+            <Component {...originalRouteProps} params={params} />
+          )}
+        />
+      ) : (
+        <Route
+          render={originalRouteProps => <Login {...originalRouteProps} />}
+        />
+      )}
+    </div>
+  );
+};
+
+const Routes = () => {
+  return (
+    <BrowserRouter>
+      <Switch>
+        <MyRoute exact path="/" component={Home} publicRoute />
+        <MyRoute exact path="/admin" component={Admin} />
+        <MyRoute exact path="/Login" component={Login} publicRoute />
+        <MyRoute exact path="/Register" component={Register} publicRoute />
+      </Switch>
+    </BrowserRouter>
+  );
+};
+
+export default Routes;
