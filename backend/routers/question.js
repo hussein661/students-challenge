@@ -1,8 +1,9 @@
 const express = require("express");
 const Question = require("../models/question");
+const Answer = require("../models/Answer");
+
 const auth = require("../middleware/auth");
 const uuid = require("uuid");
-const moment = require("moment");
 const router = new express.Router();
 
 router.post("/question/addNew", async (req, res) => {
@@ -56,7 +57,7 @@ router.get("/question", auth, async (req, res) => {
   }
 });
 
-router.get("/todayQuestion", async (req, res) => {
+router.get("/todayQuestion", auth, async (req, res) => {
   try {
     var start = new Date();
     start.setHours(0, 0, 0, 0);
@@ -75,9 +76,40 @@ router.post("/user_answer_question", auth, async (req, res) => {
   try {
     const user_id = req.user.id;
     const { question_id, answer_id } = { ...req.body };
-    return console.log(question_id, answer_id, user_id);
+    const answeredQuestion = await Answer.findOne({
+      question_id,
+      user_id
+    });
+    if (answeredQuestion) {
+      return res.status(400).json({ error: "question already answered" });
+    }
+    const answer = new Answer({
+      user_id,
+      question_id,
+      answer_id
+    });
+    answer.save();
+    return res.send(answer);
   } catch (e) {
-    return e;
+    return res.status({ e });
+  }
+});
+
+router.post("/isQuestionAnswered", auth, async (req, res) => {
+  try {
+    const user_id = req.user._id;
+    const { question_id } = req.body;
+    console.log(user_id, question_id);
+    const answeredQuestion = await Answer.findOne({
+      question_id,
+      user_id
+    });
+    if (answeredQuestion) {
+      return res.send(answeredQuestion);
+    }
+    return res.send(false);
+  } catch (e) {
+    return res.status({ e });
   }
 });
 

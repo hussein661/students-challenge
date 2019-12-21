@@ -2,19 +2,15 @@ const mongoose = require("mongoose");
 
 const AnswerSchema = new mongoose.Schema(
   {
-    Answer: {
+    answer_id: {
+      type: String
+    },
+    user_id: {
       type: String,
-      required: true,
-      trim: true
+      required: true
     },
-    score: {
-      type: Boolean,
-      default: false
-    },
-    question: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "Question"
+    question_id: {
+      type: String
     }
   },
   {

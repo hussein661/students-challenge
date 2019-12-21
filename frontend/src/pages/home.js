@@ -2,33 +2,54 @@ import React, { Component } from "react";
 import Navbar from "../components/navbar";
 import { Redirect } from "react-router-dom";
 import Axios from "axios";
+import request from "../utils/request";
+
 class Home extends Component {
   state = {
     question: {
       answers: []
     },
-    selectedAnswer: {}
+    selectedAnswerId: null
   };
   componentDidMount() {
-    Axios.get("http://localhost:5000/todayQuestion").then(r =>
-      this.setState({ question: r.data })
-    );
+    request("get", "/todayQuestion")
+      .then(r => {
+        this.setState({ question: r.data });
+        console.log(r.data);
+        request("post", "/isQuestionAnswered", { question_id: r.data._id })
+          .then(r => {
+            if (r.data === false) {
+              return;
+            }
+            this.setState({ selectedAnswerId: r.data.answer_id });
+          })
+          .catch(e => {
+            console.log(e.response);
+          });
+      })
+      .catch(e => {
+        alert();
+        console.log(e.response);
+      });
   }
 
-  handleSelectAnswer = (event, selectedAnswer) => {
-    this.setState({ selectedAnswer });
+  handleSelectAnswer = (event, selectedAnswerId) => {
+    this.setState({ selectedAnswerId });
   };
 
   submitAnswer = e => {
     e.preventDefault();
-    Axios.post("http://localhost:5000/submitAnswer/:questionId", {
-      selectedAnswer: this.state.selectedAnswer
+    request("post", "/user_answer_question", {
+      question_id: this.state.question._id,
+      answer_id: this.state.selectedAnswerId
     })
       .then(r => {
-        console.log(r);
+        console.log(r.response);
+        // alert("answered updated");
+        // window.location.reload();
       })
       .catch(e => {
-        console.log(e);
+        console.log(e.response);
       });
   };
 
@@ -50,14 +71,14 @@ class Home extends Component {
                   <h2 className="title">Which of these is not a fruit?</h2>
                   <div className="choices">
                     {question.answers.map(answer => {
-                      let selectedAnswer = false;
-                      if (answer.id === this.state.selectedAnswer.id) {
-                        selectedAnswer = true;
+                      let isAnswerSelected = false;
+                      if (answer.id === this.state.selectedAnswerId) {
+                        isAnswerSelected = true;
                       }
                       return (
                         <div
                           class="choice"
-                          onClick={e => this.handleSelectAnswer(e, answer)}
+                          onClick={e => this.handleSelectAnswer(e, answer.id)}
                         >
                           <input
                             type="radio"
@@ -68,7 +89,7 @@ class Home extends Component {
                           <label
                             for={answer.answerText}
                             style={{
-                              background: selectedAnswer ? "green" : ""
+                              background: isAnswerSelected ? "green" : ""
                             }}
                           >
                             <span class="glyphicon glyphicon-ok"></span>
