@@ -5,6 +5,7 @@ import Login from "./pages/login";
 import Navbar from "./components/navbar";
 import Home from "./pages/home";
 import Register from "./pages/register";
+import MyAnswers from "./pages/myAnswers";
 
 const isLoggedIn = () => {
   const token = localStorage.getItem("API_TOKEN");
@@ -39,7 +40,8 @@ const Routes = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <MyRoute exact path="/" component={Home} publicRoute />
+        <MyRoute exact path="/" component={Home} />
+        <MyRoute exact path="/my_answers" component={MyAnswers} />
         <MyRoute exact path="/admin" component={Admin} />
         <MyRoute exact path="/Login" component={Login} publicRoute />
         <MyRoute exact path="/Register" component={Register} publicRoute />

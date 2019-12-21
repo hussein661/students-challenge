@@ -10,7 +10,7 @@ class Register extends Component {
     }
   };
   createUser = () => {
-    const url = "http://localhost:5000/register";
+    const url = "http://localhost:5000/users/register";
     axios
       .post(url, {
         user: { ...this.state.user }

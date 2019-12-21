@@ -1,18 +1,33 @@
-const express = require('express')
-const app = express()
+const express = require("express");
+const bodyParser = require("body-parser");
+require("./db/mongoose");
+const cors = require("cors");
 
+const questionRouter = require("./routers/question");
+const userRouter = require("./routers/user");
 
-const HTML = `<div>
-    <h1>welcome to nodejs app</h1>
-    <p>Im going to start from zero</p>
-</div>`
+const app = express();
+const port = process.env.PORT || 5000;
 
-app.get('/',(req,res)=>{
-    res.send(HTML)
-})
+app.use(cors());
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Authorization, refresh"
+  );
+  next();
+});
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT,()=>{
-    console.log(`app is running on port ${PORT}`)
-})
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use(express.json());
+app.use(userRouter);
+app.use(questionRouter);
+
+app.listen(port, () => {
+  console.log("Server is up on port " + port);
+});

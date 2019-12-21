@@ -390,3 +390,8 @@ body {
 .test #feedback .body .comments {
   margin-top: 5px;
 }
+
+.answer-details {
+  display: flex;
+  justify-content: start;
+}
