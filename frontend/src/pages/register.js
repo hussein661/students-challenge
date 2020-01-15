@@ -1,27 +1,40 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import request from "../utils/request";
+
 class Register extends Component {
   state = {
     user: {
       name: "",
       email: "",
-      password: ""
-    }
-  };
-  createUser = () => {
-    const url = "http://localhost:5000/users/register";
-    axios
-      .post(url, {
-        user: { ...this.state.user }
-      })
-      .then(r => {
-        console.log(r);
-      })
-      .catch(e => {
-        console.log(e.response);
-        console.log(e.message);
-      });
+      password: "",
+      school_id: "",
+      level: ""
+    },
+    schools: [
+      {
+        id: 1,
+        name: "akks"
+      },
+      {
+        id: 2,
+        name: "saggesse"
+      }
+    ],
+    grades: [
+      {
+        name: 10,
+        level: "Beginner"
+      },
+      {
+        name: 11,
+        level: "Intermediate"
+      },
+      {
+        name: 12,
+        level: "Advanced"
+      }
+    ]
   };
 
   handleChange = e => {
@@ -30,68 +43,106 @@ class Register extends Component {
     this.setState({ user });
   };
 
+  createUser = e => {
+    e.preventDefault();
+    request("post", "/users/register", {
+      user: { ...this.state.user }
+    })
+      .then(r => {
+        localStorage.setItem("API_TOKEN", r.data.token);
+        this.props.history.push("/");
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
   render() {
     return (
-      <div>
-        <div className="wrapper fadeInDown">
-          <div id="formContent">
-            {/* Tabs Titles */}
-            {/* Icon */}
-            <div className="fadeIn first">
-              <img
-                src="http://danielzawadzki.com/codepen/01/icon.svg"
-                id="icon"
-                alt="User Icon"
-              />
-            </div>
-            {/* Register Form */}
-            <form>
-              <input
-                type="text"
-                id="name"
-                className="fadeIn second"
-                name="name"
-                onChange={this.handleChange}
-                placeholder="name"
-              />
-              <input
-                type="email"
-                id="email"
-                onChange={this.handleChange}
-                className="fadeIn second"
-                name="email"
-                placeholder="email"
-              />
-              <input
-                type="text"
-                onChange={this.handleChange}
-                id="password"
-                className="fadeIn second"
-                name="password"
-                placeholder="password"
-              />
-              <input
-                type="text"
-                id="cpassword"
-                className="fadeIn third"
-                name="cpassword"
-                placeholder="confirm password"
-              />
-              <input
-                type="button"
-                onClick={this.createUser}
-                className="fadeIn fourth"
-                defaultValue="create my account"
-              />
+      <div className="container">
+        <div className="row">
+          <div className="col-md-6 form-container">
+            <form onSubmit={this.createUser}>
+              <div className="form-group">
+                <input
+                  placeholder="Full Name"
+                  type="name"
+                  name="name"
+                  className="form-control"
+                  onChange={this.handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <input
+                  placeholder="Email"
+                  type="email"
+                  name="email"
+                  className="form-control"
+                  onChange={this.handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <input
+                  placeholder="Password"
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  onChange={this.handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <input
+                  placeholder="Confirm password"
+                  type="password"
+                  className="form-control"
+                  // onChange={this.handleChange}
+                  name="confirm_password"
+                />
+              </div>
+              <div className="form-group">
+                <select
+                  className="form-control"
+                  name="school_id"
+                  onChange={this.handleChange}
+                >
+                  {this.state.schools.map(school => {
+                    return (
+                      <option value={school.id} key={school.id}>
+                        {school.name}
+                      </option>
+                    );
+                  })}
+                </select>
+                <div className="form-group">
+                  <select
+                    className="form-control"
+                    name="level"
+                    onChange={this.handleChange}
+                  >
+                    {this.state.grades.map(grade => {
+                      return (
+                        <option value={grade.level} key={grade.grade}>
+                          {grade.name}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div>
+                  <button type="submit" className="btn btn-primary">
+                    create my account
+                  </button>
+                </div>
+                <div>
+                  <Link to="/login">
+                    <a href="#">already have account</a>
+                  </Link>
+                </div>
+              </div>
             </form>
-            {/* Remind Passowrd */}
-            <div id="formFooter">
-              <Link to="/login">
-                <a className="underlineHover" href="#">
-                  already have account
-                </a>
-              </Link>
-            </div>
           </div>
         </div>
       </div>

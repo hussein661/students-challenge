@@ -1,10 +1,48 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 class Navbar extends Component {
+  logout = e => {
+    localStorage.clear();
+  };
+
+  log = () => {
+    return (
+      <>
+        {localStorage.getItem("API_TOKEN") ? (
+          <li className="nav-item">
+            <Link to="/login">
+              <a
+                className="nav-link"
+                href="#"
+                tabIndex={-1}
+                onClick={this.logout}
+                aria-disabled="true"
+              >
+                Logout
+              </a>
+            </Link>
+          </li>
+        ) : (
+          <li className="nav-item">
+            <Link to="/login">
+              <a
+                className="nav-link"
+                href="#"
+                tabIndex={-1}
+                aria-disabled="true"
+              >
+                Login
+              </a>
+            </Link>
+          </li>
+        )}
+      </>
+    );
+  };
   render() {
     return (
       <div>
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <nav className="navbar navbar-expand-lg navbar-light">
           <a className="navbar-brand" href="#">
             QUESTIONARE
           </a>
@@ -29,9 +67,16 @@ class Navbar extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="my_answers">
+                <Link to="/my_answers">
                   <a className="nav-link" href="#">
                     My answers
+                  </a>
+                </Link>
+              </li>
+              <li className="nav-item active">
+                <Link to="/questions">
+                  <a className="nav-link" href="#">
+                    see old questions <span className="sr-only">(current)</span>
                   </a>
                 </Link>
               </li>
@@ -60,18 +105,7 @@ class Navbar extends Component {
                   </a>
                 </div>
               </li>
-              <li className="nav-item">
-                <Link to="/login">
-                  <a
-                    className="nav-link"
-                    href="#"
-                    tabIndex={-1}
-                    aria-disabled="true"
-                  >
-                    Login
-                  </a>
-                </Link>
-              </li>
+              {this.log()}
             </ul>
             <form className="form-inline my-2 my-lg-0">
               <input

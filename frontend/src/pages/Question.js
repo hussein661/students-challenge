@@ -2,24 +2,21 @@ import React, { Component } from "react";
 import request from "../utils/request";
 import Feedback from "../components/feedback";
 
-class Home extends Component {
+class Question extends Component {
   state = {
-    question: {
-      question: {},
-      answers: [{}]
-    },
-    message: "",
-    selectedAnswerId: null,
-    answerScore: 0,
-    user: {}
+    question: { question: {} }
   };
   componentDidMount() {
-    this.getUser();
-    request("get", "/todayQuestion")
+    this.getQuestion();
+  }
+
+  getQuestion() {
+    const question_id = this.props.params.question_id;
+    request("get", `/question/${question_id}`)
       .then(r => {
         if (!r.data.question) {
           return this.setState({
-            message: "there is no question for today just yet"
+            message: "question not found"
           });
         }
         const question = r.data;
@@ -49,12 +46,6 @@ class Home extends Component {
       });
   }
 
-  getUser = () => {
-    request("get", "/users/me").then(r => {
-      this.setState({ user: r.data });
-    });
-  };
-
   handleSelectAnswer = (event, selectedAnswerId, answerScore) => {
     this.setState({ selectedAnswerId, answerScore: parseInt(answerScore) });
   };
@@ -75,7 +66,6 @@ class Home extends Component {
         });
       })
       .catch(e => {
-        alert();
         this.setState({ message: e.message });
       });
   };
@@ -113,8 +103,7 @@ class Home extends Component {
                   <label
                     for={answer.answerText}
                     style={{
-                      background: isAnswerSelected ? "green" : "",
-                      color: isAnswerSelected ? "green" : ""
+                      background: isAnswerSelected ? "green" : ""
                     }}
                   >
                     <span className="glyphicon glyphicon-ok"></span>
@@ -147,10 +136,6 @@ class Home extends Component {
     return (
       <div>
         <div className="container">
-          <div className="row">
-            <h2 className="title">welcome {user.name}</h2>
-            <div className="level">Intermediate</div>
-          </div>
           {this.message()}
           <div className="content test col-md-9 col-md-offset-3">
             {this.question()}
@@ -161,4 +146,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default Question;

@@ -1,23 +1,30 @@
 const express = require("express");
-const Question = require("../models/question");
-const Answer = require("../models/Answer");
+const Question = require("../models/Question");
+const UserAnswer = require("../models/UserAnswer");
+const User = require("../models/User");
 
+const Answer = require("../models/Answer");
 const auth = require("../middleware/auth");
-const uuid = require("uuid");
 const router = new express.Router();
 
 router.post("/question/addNew", async (req, res) => {
-  const questionToAdd = { ...req.body };
-  questionToAdd.answers.map(q => {
-    q.id = uuid();
-  });
-  const question = new Question({
-    ...questionToAdd
-  });
-
   try {
-    await question.save();
-    res.status(201).send(question);
+    const questionToAdd = { ...req.body };
+    const question = new Question({
+      questionText: questionToAdd.questionText
+    })
+      .save()
+      .then(question => {
+        questionToAdd.answers.map(async answer => {
+          let answerToAdd = new Answer({
+            question_id: question._id,
+            answerText: answer.answerText,
+            answerScore: answer.answerScore
+          });
+          await answerToAdd.save();
+        });
+        res.status(201).send(question);
+      });
   } catch (e) {
     res.status(400).json({ error: e.message });
   }
@@ -26,34 +33,24 @@ router.post("/question/addNew", async (req, res) => {
 // GET /question?completed=true
 // GET /question?limit=10&skip=20
 // GET /question?sortBy=createdAt:desc
-router.get("/question", auth, async (req, res) => {
-  const match = {};
-  const sort = {};
-
-  if (req.query.completed) {
-    match.completed = req.query.completed === "true";
-  }
-
-  if (req.query.sortBy) {
-    const parts = req.query.sortBy.split(":");
-    sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
-  }
-
+router.get("/question/:question_id", auth, async (req, res) => {
   try {
-    await req.user
-      .populate({
-        path: "question",
-        match,
-        options: {
-          limit: parseInt(req.query.limit),
-          skip: parseInt(req.query.skip),
-          sort
-        }
-      })
-      .execPopulate();
-    res.send(req.user.question);
+    const question = await Question.findById(req.params.question_id);
+    if (!question) {
+      return res.send({ message: "question not found" });
+    }
+    const answers = await Answer.find({ question_id: question._id });
+    const questionPreview = {
+      question: {
+        _id: question._id,
+        questionText: question.questionText,
+        createdAt: question.createdAt
+      },
+      answers: [...answers]
+    };
+    res.send(questionPreview);
   } catch (e) {
-    res.status(500).send();
+    res.send({ e });
   }
 });
 
@@ -63,31 +60,47 @@ router.get("/todayQuestion", auth, async (req, res) => {
     start.setHours(0, 0, 0, 0);
     var end = new Date();
     end.setHours(23, 59, 59, 999);
-    const question = await Question.findOne({
+    let question = await Question.findOne({
       createdAt: { $gte: start, $lt: end }
     });
-    res.send(question);
+    if (!question) {
+      return res.send({ message: "there is no question for today" });
+    }
+    const answers = await Answer.find({ question_id: question._id });
+    const questionPreview = {
+      question: {
+        _id: question._id,
+        questionText: question.questionText,
+        createdAt: question.createdAt
+      },
+      answers: [...answers]
+    };
+    res.send(questionPreview);
   } catch (e) {
-    return e;
+    res.send({ e: e.message });
   }
 });
 
 router.post("/user_answer_question", auth, async (req, res) => {
   try {
     const user_id = req.user.id;
-    const { question_id, answer_id } = { ...req.body };
-    const answeredQuestion = await Answer.findOne({
+    const { question_id, answer_id, answerScore } = { ...req.body };
+    const answeredQuestion = await UserAnswer.findOne({
       question_id,
       user_id
     });
     if (answeredQuestion) {
       return res.status(400).json({ error: "question already answered" });
     }
-    const answer = new Answer({
+    const answer = new UserAnswer({
       user_id,
       question_id,
       answer_id
     });
+    const user = await User.findById(user_id);
+    const score = user.score + answerScore;
+    await User.updateOne({ _id: user_id }, { $set: { score } });
+
     answer.save();
     return res.send(answer);
   } catch (e) {
@@ -97,18 +110,21 @@ router.post("/user_answer_question", auth, async (req, res) => {
 
 router.post("/isQuestionAnswered", auth, async (req, res) => {
   try {
-    const user_id = req.user._id;
+    const user_id = req.user.id;
+    console.log(req.body);
     const { question_id } = req.body;
     console.log(user_id, question_id);
-    const answeredQuestion = await Answer.findOne({
+    const answeredQuestion = await UserAnswer.findOne({
       question_id,
       user_id
     });
     if (answeredQuestion) {
+      console.log(answeredQuestion);
       return res.send(answeredQuestion);
     }
     return res.send(false);
   } catch (e) {
+    console.log(e);
     return res.status({ e });
   }
 });
@@ -172,6 +188,16 @@ router.delete("/question/:id", auth, async (req, res) => {
     res.send(question);
   } catch (e) {
     res.status(500).send();
+  }
+});
+
+router.get("/questions/all", auth, async (req, res) => {
+  try {
+    const questions = await Question.find();
+
+    res.send(questions);
+  } catch (e) {
+    res.status(500).send(e);
   }
 });
 

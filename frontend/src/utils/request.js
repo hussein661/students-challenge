@@ -20,6 +20,8 @@ const request = (type, url, body) => {
       return r;
     })
     .catch(e => {
+      console.log(e.message);
+      console.log(e.response);
       return e;
       if (e.response.status === 401) {
         // localStorage.clear();

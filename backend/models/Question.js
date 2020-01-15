@@ -6,8 +6,8 @@ const QuestionSchema = new mongoose.Schema(
       type: String,
       required: true
     },
-    answers: {
-      type: Array
+    level: {
+      type: String
     }
   },
   {
@@ -15,6 +15,6 @@ const QuestionSchema = new mongoose.Schema(
   }
 );
 
-const Question = mongoose.model("Question", QuestionSchema);
+var Question = mongoose.model("Question", QuestionSchema);
 
 module.exports = Question;

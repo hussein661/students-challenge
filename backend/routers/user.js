@@ -1,25 +1,28 @@
 const express = require("express");
 const multer = require("multer");
 const sharp = require("sharp");
-const User = require("../models/user");
+const User = require("../models/User");
+const UserAnswer = require("../models/UserAnswer");
+
 const auth = require("../middleware/auth");
 const { sendWelcomeEmail, sendCancelationEmail } = require("../emails/account");
 const router = new express.Router();
 
 router.post("/users/register", async (req, res) => {
-  const user = new User(req.body);
-
+  console.log({ ...req.body });
   try {
+    const user = new User({ ...req.body.user });
     await user.save();
-    sendWelcomeEmail(user.email, user.name);
     const token = await user.generateAuthToken();
     res.status(201).send({ user, token });
   } catch (e) {
-    res.status(400).send(e);
+    console.log(e.message);
+    res.status(400).send({ e });
   }
 });
 
 router.post("/users/login", async (req, res) => {
+  console.log(req.body);
   try {
     const user = await User.findByCredentials(
       req.body.email,
@@ -136,6 +139,16 @@ router.get("/users/:id/avatar", async (req, res) => {
 
     res.set("Content-Type", "image/png");
     res.send(user.avatar);
+  } catch (e) {
+    res.status(404).send();
+  }
+});
+
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find();
+
+    res.send(users);
   } catch (e) {
     res.status(404).send();
   }

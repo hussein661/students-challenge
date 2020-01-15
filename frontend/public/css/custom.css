@@ -1,0 +1,48 @@
+.header {
+  margin: 0 auto;
+}
+
+.content {
+  text-align: center;
+  margin: 5vw auto;
+  width: 100%;
+}
+
+.title {
+  font-size: 2vw;
+}
+
+.container,
+.container-fluid,
+.wrapper {
+  margin: 0 auto !important;
+  max-width: 850px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  text-align: center;
+  margin: 0.8vw;
+  /* text-transform: uppercase; */
+  font-style: italic;
+}
+.table .thead {
+  background: burlywood;
+}
+
+.feed-message {
+  padding: 0px 2px;
+  width: 100%;
+  text-align: center;
+  color: orangered;
+  border: 1px solid orangered;
+  border-radius: 20px;
+}
+
+.row-clickable:hover {
+  cursor: pointer;
+  background: lightskyblue;
+}

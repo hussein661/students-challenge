@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const Question = require("./question");
+const Question = require("./Question");
 
 const userSchema = new mongoose.Schema(
   {
@@ -31,6 +31,16 @@ const userSchema = new mongoose.Schema(
         }
       }
     },
+    school: {
+      type: String
+    },
+    level: {
+      type: String
+    },
+    score: {
+      type: Number,
+      default: 0
+    },
     tokens: [
       {
         token: {
@@ -47,22 +57,16 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.virtual("questions", {
-  ref: "Question",
-  localField: "_id",
-  foreignField: "owner"
-});
+userSchema.methods.toJSON = function() {
+  const user = this;
+  const userObject = user.toObject();
 
-// userSchema.methods.toJSON = function() {
-//   const user = this;
-//   const userObject = user.toObject();
+  delete userObject.password;
+  delete userObject.tokens;
+  delete userObject.avatar;
 
-//   delete userObject.password;
-//   delete userObject.tokens;
-//   delete userObject.avatar;
-
-//   return userObject;
-// };
+  return userObject;
+};
 
 userSchema.methods.generateAuthToken = async function() {
   const user = this;
@@ -99,6 +103,6 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+var User = mongoose.model("User", userSchema);
 
 module.exports = User;

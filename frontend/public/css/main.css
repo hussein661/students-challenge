@@ -23,9 +23,11 @@ h2 {
   text-transform: uppercase;
   display: inline-block;
   margin: 40px 8px 10px 8px;
-  color: #cccccc;
 }
 
+a {
+  color: black;
+}
 /* STRUCTURE */
 
 .wrapper {
@@ -41,7 +43,7 @@ h2 {
 #formContent {
   -webkit-border-radius: 10px 10px 10px 10px;
   border-radius: 10px 10px 10px 10px;
-  background: #fff;
+  /* background: #fff; */
   padding: 30px;
   width: 90%;
   max-width: 450px;
@@ -379,7 +381,7 @@ body {
   padding: 10px;
 }
 .test #feedback .body .thumbs input:checked + label {
-  color: #fff;
+  color: black;
 }
 .test #feedback .body .thumbs input:checked + label[for="thumbs-up"] {
   background: #3b3;
@@ -394,4 +396,9 @@ body {
 .answer-details {
   display: flex;
   justify-content: start;
+}
+
+.form-container {
+  margin: 0 auto;
+  /* border: 2px solid black; */
 }
