@@ -9,6 +9,18 @@ const router = new express.Router();
 
 router.post("/question/addNew", async (req, res) => {
   try {
+    var start = new Date();
+    start.setHours(0, 0, 0, 0);
+    var end = new Date();
+    end.setHours(23, 59, 59, 999);
+    let submittedQuestion = await Question.findOne({
+      createdAt: { $gte: start, $lt: end }
+    });
+    if (submittedQuestion) {
+      return res
+        .status(400)
+        .send({ error: "already submitted a question today" });
+    }
     const questionToAdd = { ...req.body };
     const question = new Question({
       questionText: questionToAdd.questionText
