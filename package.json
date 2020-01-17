@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "backend": "cd backend && npm start",
-    "frontend": "cd frontendnpm start && npm start",
-    "start": "concurrently --kill-others-on-fail --names \"backend,frontend\" \"npm run backend\" \"npm run frontend\""
+    "frontend": "cd frontend && npm start",
+    "start": "concurrently --kill-others-on-fail --names \"backend,frontend\" \"npm run backend\" \"npm run frontend\"",
+    "postinstall": "cd frontend && npm install && cd .. && cd backend && npm install"
   },
   "repository": {
     "type": "git",
