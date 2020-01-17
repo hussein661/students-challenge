@@ -41,8 +41,8 @@ class Navbar extends Component {
   };
   render() {
     return (
-      <div>
-        <nav className="navbar navbar-expand-lg navbar-light">
+      <div className="top-nav">
+        <nav className="navbar navbar-expand-lg">
           <a className="navbar-brand" href="#">
             QUESTIONARE
           </a>

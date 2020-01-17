@@ -91,6 +91,18 @@ router.delete("/users/me", auth, async (req, res) => {
     res.status(500).send();
   }
 });
+router.get("/isAdmin", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    console.log(user.isAdmin);
+    if (user.isAdmin) {
+      return res.send({ isAdmin: true });
+    }
+    return res.send({ isAdmin: false });
+  } catch (e) {
+    res.status(500).send();
+  }
+});
 
 const upload = multer({
   limits: {

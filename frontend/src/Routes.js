@@ -19,10 +19,11 @@ const isLoggedIn = () => {
 const MyRoute = MyRouteProps => {
   const Component = MyRouteProps.component;
   const publicRoute = MyRouteProps.publicRoute ? true : false;
+  const admin = MyRouteProps.admin ? true : false;
   const params = MyRouteProps.computedMatch.params;
   return (
     <div>
-      <Navbar isLoggedIn={isLoggedIn} />
+      {admin ? "" : <Navbar isLoggedIn={isLoggedIn} />}
       {isLoggedIn() || publicRoute ? (
         <Route
           render={originalRouteProps => (
@@ -44,7 +45,7 @@ const Routes = () => {
       <Switch>
         <MyRoute exact path="/" component={Home} />
         <MyRoute exact path="/my_answers" component={MyAnswers} />
-        <MyRoute exact path="/admin" component={Admin} />
+        <MyRoute exact path="/admin" component={Admin} admin />
         <MyRoute exact path="/questions" component={AllQuestions} />
         <MyRoute exact path="/question/:question_id" component={Question} />
 

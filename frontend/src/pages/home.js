@@ -11,7 +11,7 @@ class Home extends Component {
     message: "",
     selectedAnswerId: null,
     answerScore: 0,
-    user: {}
+    user: { name: "" }
   };
   componentDidMount() {
     this.getUser();
@@ -147,13 +147,20 @@ class Home extends Component {
     return (
       <div>
         <div className="container">
-          <div className="row">
-            <h2 className="title">welcome {user.name}</h2>
-            <div className="level">Intermediate</div>
-          </div>
-          {this.message()}
-          <div className="content test col-md-9 col-md-offset-3">
-            {this.question()}
+          <div className="grid">
+            <div className="left-side">
+              {" "}
+              <div className="header-2">
+                <h2 className="title">welcome {user.name}</h2>
+                <div className="level">Intermediate</div>
+              </div>
+            </div>
+
+            <div className="content test">
+              <div className="top">{this.message()}</div>
+              <div className="question">{this.question()}</div>
+            </div>
+            <div className="right-side">right side</div>
           </div>
         </div>
       </div>

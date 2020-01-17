@@ -2,10 +2,12 @@ import React, { Component } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import request from "../utils/request";
+import Feedback from "../components/feedback";
 class Login extends Component {
   state = {
     email: "",
-    password: ""
+    password: "",
+    errorMessage: ""
   };
 
   handleChange = e => {
@@ -14,6 +16,7 @@ class Login extends Component {
 
   onSubmit = e => {
     e.preventDefault();
+    this.state.errorMessage = null;
     const { email, password } = this.state;
     const url = "http://localhost:5000/users/login";
     if (email.length && password.length) {
@@ -25,7 +28,17 @@ class Login extends Component {
           localStorage.setItem("API_TOKEN", r.data.token);
           this.props.history.push("/");
         })
-        .catch(e => {});
+        .catch(e => {
+          this.setState({
+            errorMessage: "your email or password was incorrect"
+          });
+        });
+    }
+  };
+
+  error = () => {
+    if (this.state.errorMessage) {
+      return <Feedback message={this.state.errorMessage} />;
     }
   };
 
@@ -36,6 +49,7 @@ class Login extends Component {
           <div className="col-md-6 form-container">
             <h1>Login to continue</h1>
             <form onSubmit={this.onSubmit}>
+              {this.error()}
               <div className="form-group">
                 <input
                   type="email"

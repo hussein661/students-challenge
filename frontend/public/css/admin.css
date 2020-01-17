@@ -35,16 +35,6 @@ body {
   color: black;
 }
 
-nav {
-  /* background-color: darkslategrey; */
-}
-
-nav a,
-li {
-  color: black !important;
-  font-weight: bold;
-}
-
 .choice {
   color: black !important;
   font-weight: bolder !important;

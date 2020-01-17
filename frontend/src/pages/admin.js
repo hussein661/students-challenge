@@ -12,6 +12,20 @@ class Admin extends Component {
     this.setState({ isQuestionView: !this.state.isQuestionView });
   };
 
+  checkIfAdmin() {
+    request("get", "/isAdmin")
+      .then(res => {
+        if (!res.data.isAdmin) {
+          return this.props.history.push("/");
+        }
+      })
+      .catch(e => console.log(e));
+  }
+
+  componentDidMount() {
+    this.checkIfAdmin();
+  }
+
   render() {
     return (
       <div className="container">
